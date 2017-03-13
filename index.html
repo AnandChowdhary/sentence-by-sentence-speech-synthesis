@@ -1,0 +1,36 @@
+<title>Demo of Sentence-by-sentence Speech</title>
+<style>
+	body { font: menu; font-size: 100%; line-height: 1.6; max-width: 600px; margin: 10vh auto; }
+	span.speaking { background: rgb(255, 255, 200) }
+</style>
+<div data-read-aloud>
+<p>Oswald Berkhan (19 March 1834 &ndash; 15 February 1917) was a German physician. Born in Blankenburg am Harz, he was one of the initiators of the "Idioten-Anstalt Neuerkerode" (institution for people with mental illnesses), which was thought to be a sanctuary for disabled and ill people. He was also a dedicated reformer of special education schools. He was the first person to identify dyslexia in 1881, though the term "dyslexia" was coined in 1887 by Rudolf Berlin, who was an ophthalmologist in Stuttgart. Berkhan died in Braunschweig.</p>
+<p>Source: <a href="https://en.wikipedia.org/wiki/Oswald_Berkhan">Wikipedia</a></p>
+</div>
+<button style="font: inherit; margin-top: 10px">Start Reading</button>
+<script>
+
+	function wrapLines(str, tmpl) {
+		return str.replace(/[^\.!\?]+[\.!\?]+/g, tmpl || "<span>$&</span>");
+	}
+	[].slice.call(document.querySelectorAll("[data-read-aloud] > *")).forEach(function(a) {
+		a.innerHTML = wrapLines(a.innerHTML);
+	});
+
+	var synth = window.speechSynthesis;
+	[].slice.call(document.querySelectorAll("[data-read-aloud] > * span")).forEach(function(a, b) {
+		window["speech" + b] = new SpeechSynthesisUtterance(a.innerText);
+		window["speech" + b].onend = function() {
+			[].slice.call(document.querySelectorAll("[data-read-aloud] > * span")).forEach(function(x) {
+				x.classList.remove("speaking");
+			});
+			if ((b + 1) <= document.querySelectorAll("[data-read-aloud] > * span").length) {
+				synth.speak(window["speech" + (b + 1)]);
+				document.querySelectorAll("[data-read-aloud] > * span")[(b + 1)].classList.add("speaking");
+			}
+		}
+	});
+	synth.speak(window["speech0"]);
+	document.querySelectorAll("[data-read-aloud] > * span")[0].classList.add("speaking");
+
+</script>
